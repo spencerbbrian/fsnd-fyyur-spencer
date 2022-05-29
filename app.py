@@ -127,7 +127,7 @@ def venues():
       venues_info.append({
         "id": venue.id,
         "name": venue.name,
-        "num_up_coming_shows": len(db.session.query(Show).filter(Show.venue_id == 1).filter(Show.start_time>datetime.now()).all())
+        "num_upcoming_shows": len(db.session.query(Show).filter(Show.venue_id == 1).filter(Show.start_time>datetime.now()).all())
       })
     data.append({
       "city":place.city,
@@ -285,16 +285,24 @@ def delete_venue(venue_id):
 @app.route('/artists')
 def artists():
   # TODO: replace with real data returned from querying the database
-  data=[{
-    "id": 4,
-    "name": "Guns N Petals",
-  }, {
-    "id": 5,
-    "name": "Matt Quevedo",
-  }, {
-    "id": 6,
-    "name": "The Wild Sax Band",
-  }]
+  data = []
+  artists = Artist.query.all()
+
+  for artist in artists:
+    show_artists = Artist.query.filter_by(city = artist.city).filter_by(state=artist.state).all()
+    artists_info = []
+    for artist in show_artists:
+      artists_info.append({
+        "id":artist.city,
+        "name":artist.name,
+        "num_upcoming_shows": len(db.session.query(Show).filter(Show.artist_id == 1).filter(Show.start_time>datetime.now()).all())
+      })
+
+    data.append({
+    "city":artist.city,
+    "state":artist.state,
+    "artists":artists_info
+  })
   return render_template('pages/artists.html', artists=data)
 
 @app.route('/artists/search', methods=['POST'])
